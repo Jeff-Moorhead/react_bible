@@ -1,25 +1,40 @@
-import logo from './logo.svg';
 import './App.css';
+import { useEffect, useState } from 'react';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+    const [ verse, setVerse ] = useState('')
+    const fetchVerseData = () => {
+        const url = "https://bible-api.com/matthew+9:9-13"
+        fetch(url, {
+            method: 'GET',
+            accepts: 'application/json',
+        })
+        .then((res) => {
+            if (res.ok) {
+                return res.json();
+            }
+        })
+        .then((data) => {
+            let output = '';
+            let verses = data.verses;
+
+            verses.forEach((verse) => output += verse.text + ' ') // pad with a space
+            setVerse(output)
+        });
+    }
+
+    useEffect(() => fetchVerseData())
+
+    return <h1>{ verse }</h1>
+}
+
+function VerseTitle() {
+
+}
+
+function VerseText() {
+
 }
 
 export default App;
