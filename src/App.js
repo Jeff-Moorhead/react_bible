@@ -10,10 +10,8 @@ function App() {
     const header = 'The King James Bible'
 
     return <>
-        <div className="container">
+        <div className="search-container">
             <Header header={ header } /> {/* Components get rerendered when their props change */}
-            <VerseTitle title={ title } />
-            <VerseText text={ verse } />
             <VerseLookupForm callback={(data) => {
                 setTitle(data.reference)
 
@@ -24,14 +22,15 @@ function App() {
                 })
 
                 setVerse(output)
-            }} />        
+            }} />
         </div>
+        <VerseText text={ verse } title={ title }/>
     </>
 }
 
 function Header({ header }) {
 
-    return <h1>{ header }</h1>
+    return <div className="header"><h1>{ header }</h1></div>
 }
 
 function VerseTitle({ title }) {
@@ -39,10 +38,11 @@ function VerseTitle({ title }) {
     return <h2>{ title }</h2>
 }
 
-function VerseText({ text }) {
+function VerseText({ text, title }) {
 
     return (
         <div className="verse-text">
+            <VerseTitle title={ title } />
             <p>{ text }</p>
         </div>
     )
@@ -84,48 +84,50 @@ function VerseLookupForm({ callback }) {
     }
 
     return (
-        <form name="select-verse">
-            <Select
-                className="verse-select"
-                value={ book }
-                options={ Books }
-                onChange={ option => setBook(option) }
-                placeholder="Select Book"
-                isSearchable={ false }
-            /> 
-            <Select
-                className="verse-select"
-                value={ chapter }
-                options={ book.chapters }
-                onChange={ option => setChapter(option)}
-                placeholder="Select Chapter"
-                isSearchable={ false }
-            />
-            <Select
-                className="verse-select"
-                value={ verseStart }
-                options={ verseStartOptions(chapter)}
-                onChange={ option => {
-                    setVerseStart(option)
+        <div className="search-form">
+            <form name="select-verse">
+                <Select
+                    className="verse-select"
+                    value={ book }
+                    options={ Books }
+                    onChange={ option => setBook(option) }
+                    placeholder="Select Book"
+                    isSearchable={ false }
+                /> 
+                <Select
+                    className="verse-select"
+                    value={ chapter }
+                    options={ book.chapters }
+                    onChange={ option => setChapter(option)}
+                    placeholder="Select Chapter"
+                    isSearchable={ false }
+                />
+                <Select
+                    className="verse-select"
+                    value={ verseStart }
+                    options={ verseStartOptions(chapter)}
+                    onChange={ option => {
+                        setVerseStart(option)
 
-                    if (option.value > verseEnd.value) {
-                        setVerseEnd(option)
-                    }
-                }}
-                placeholder="Select Starting Verse"
-                isSearchable={ false }
-            />
-            <Select
-                className="verse-select"
-                value={ verseEnd } 
-                options={ verseEndOptions(chapter, verseStart)}
-                onChange={ option => setVerseEnd(option)}
-                placeholder="Select Ending Verse"
-                isSearchable={ false }
-            />
-            <button className="lookup-verse" type="button" onClick={ onFormSubmit }
-            >Look Up Verse</button>
-        </form>
+                        if (option.value > verseEnd.value) {
+                            setVerseEnd(option)
+                        }
+                    }}
+                    placeholder="Select Starting Verse"
+                    isSearchable={ false }
+                />
+                <Select
+                    className="verse-select"
+                    value={ verseEnd } 
+                    options={ verseEndOptions(chapter, verseStart)}
+                    onChange={ option => setVerseEnd(option)}
+                    placeholder="Select Ending Verse"
+                    isSearchable={ false }
+                />
+                <button className="lookup-verse" type="button" onClick={ onFormSubmit }
+                >Look Up Verse</button>
+            </form>
+        </div>
     )
 }
 

@@ -1,14 +1,27 @@
-.container {
-  position: relative;
-  left: 25vw;
-  text-align: center;
-  padding: 15px;
-  height: 100vh;
-  max-width: 50vw;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
+
+body {
+  background-color: navy;
+  margin: 0 0 0 0;
 }
 
-.lookup-verse {
-  margin: 5px;
+.search-container {
+  text-align: center;
+  height: 45vh;
+  width: 100%;
+}
+
+.header {
+  color: whitesmoke;
+  height: 30%;
+  width: 75%;
+  margin: auto;
+}
+
+.search-form {
+  height: 70%;
+  width: 75%;
+  margin: auto;
 }
 
 .verse-select {
@@ -16,10 +29,75 @@
 }
 
 .verse-text {
-  padding: 15px;
-  margin: 15px;
+  position: absolute;
+  left: 12.5%;
+  width: 75vw;
+  height: 65vh;
+  text-align: center;
+  margin: auto;
+  overflow-y: auto;
 }
 
-p {
+p, h2 {
+  color: whitesmoke;
+  font-family: 'Montserrat', sans-serif;
   line-height: 30px;
+}
+
+/* Button CSS */
+.lookup-verse {
+  appearance: none;
+  background-color: #FAFBFC;
+  border: 1px solid rgba(27, 31, 35, 0.15);
+  border-radius: 6px;
+  box-shadow: rgba(27, 31, 35, 0.04) 0 1px 0, rgba(255, 255, 255, 0.25) 0 1px 0 inset;
+  box-sizing: border-box;
+  color: #24292E;
+  cursor: pointer;
+  display: inline-block;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  list-style: none;
+  padding: 6px 16px;
+  position: relative;
+  transition: background-color 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+  white-space: nowrap;
+  word-wrap: break-word;
+}
+
+.lookup-verse:hover {
+  background-color: #F3F4F6;
+  text-decoration: none;
+  transition-duration: 0.1s;
+}
+
+.lookup-verse:disabled {
+  background-color: #FAFBFC;
+  border-color: rgba(27, 31, 35, 0.15);
+  color: #959DA5;
+  cursor: default;
+}
+
+.lookup-verse:active {
+  background-color: #EDEFF2;
+  box-shadow: rgba(225, 228, 232, 0.2) 0 1px 0 inset;
+  transition: none 0s;
+}
+
+.lookup-verse:focus {
+  outline: 1px transparent;
+}
+
+.lookup-verse:before {
+  display: none;
+}
+
+.lookup-verse:-webkit-details-marker {
+  display: none;
 }
