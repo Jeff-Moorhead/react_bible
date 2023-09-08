@@ -7,37 +7,98 @@ import { useEffect, useState } from 'react';
 function App() {
 
     const [ verse, setVerse ] = useState('')
-    const fetchVerseData = () => {
-        const url = "https://bible-api.com/matthew+9:9-13?translation=kjv"
-        fetch(url, {
-            method: 'GET',
-            accepts: 'application/json',
-        })
-        .then((res) => {
-            if (res.ok) {
-                return res.json();
-            }
-        })
-        .then((data) => {
-            let output = '';
-            let verses = data.verses;
+    const [ title, setTitle ] = useState('Bible Verses')
 
-            verses.forEach((verse) => output += verse.text + ' ') // pad with a space
-            setVerse(output)
-        });
+    return <>
+        <div className="container">
+            <VerseTitle title={ title } /> {/* Components get rerendered when their props change */}
+            <VerseText text={ verse } />
+            <VerseLookupForm callback={(data) => {
+                setTitle(data.title)
+                setVerse(data.text)
+            }} />        
+        </div>
+    </>
+}
+
+function VerseTitle({ title }) {
+    return <h1>{ title }</h1>
+}
+
+function VerseText({ text }) {
+    return <p>{ text }</p>
+}
+
+function VerseLookupForm({ callback }) {
+
+    const [ book, setBook ] = useState('')
+    const books = [
+        {
+            name: "Matthew",
+            chapters: [
+                {
+                    chapter: 9,
+                    maxVerse: 15,
+                }
+            ]
+        },
+        {
+            name: "John",
+            chapters: [
+                {
+                    chapter: 9,
+                    maxVerse: 75,
+                }
+            ]
+        }
+    ]
+
+    const bookChoices = books.map(( choice ) => <option value={choice.name} key={choice.name}>{ choice.name }</option>)
+    const onFormSubmit = async () => {
+        const results = await fetchVerseData( book, 9, 9 )
+        callback(results)
     }
 
-    useEffect(() => fetchVerseData())
-
-    return <h1>{ verse }</h1>
+    return (
+        <form name="select-verse">
+            <label htmlFor="book">Select Book: </label>
+                <select id="book" name="book" onChange={(e) => setBook(e.target.value)} >
+                    { bookChoices }
+                </select>
+            <button className="lookup-verse" type="button" onClick={ onFormSubmit }
+            >Look Up Verse</button>
+        </form>
+    )
 }
 
-function VerseTitle() {
+async function fetchVerseData( book, verse, chapter ) {
 
-}
+    const url = 'https://bible-api.com/' + book + '+' + chapter + ':' + verse + "?translation=kjv"
+    let results = await fetch(url, {
+        method: 'GET',
+        accepts: 'application/json',
+    })
+    .then((res) => {
+        if (res.ok) {
+            return res.json();
+        } else {
+            throw res.statusText
+        }
+    })
+    .then((data) => {
+        let output = '';
+        let verses = data.verses;
 
-function VerseText() {
+        verses.forEach((verse) => output += verse.text + ' ') // pad with a space
 
+        return {
+            title: data.reference,
+            text: output,
+        }
+    })
+    .catch(e => console.log(e));
+
+    return results
 }
 
 export default App;
