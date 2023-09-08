@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 // TODO: add basic search functionality
 // TODO: add randomizer (how to get a list of available books and verses?)
