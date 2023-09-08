@@ -91,6 +91,7 @@ function VerseLookupForm({ callback }) {
                 options={ Books }
                 onChange={ option => setBook(option) }
                 placeholder="Select Book"
+                isSearchable={ false }
             /> 
             <Select
                 className="verse-select"
@@ -98,6 +99,7 @@ function VerseLookupForm({ callback }) {
                 options={ book.chapters }
                 onChange={ option => setChapter(option)}
                 placeholder="Select Chapter"
+                isSearchable={ false }
             />
             <Select
                 className="verse-select"
@@ -111,6 +113,7 @@ function VerseLookupForm({ callback }) {
                     }
                 }}
                 placeholder="Select Starting Verse"
+                isSearchable={ false }
             />
             <Select
                 className="verse-select"
@@ -118,6 +121,7 @@ function VerseLookupForm({ callback }) {
                 options={ verseEndOptions(chapter, verseStart)}
                 onChange={ option => setVerseEnd(option)}
                 placeholder="Select Ending Verse"
+                isSearchable={ false }
             />
             <button className="lookup-verse" type="button" onClick={ onFormSubmit }
             >Look Up Verse</button>
