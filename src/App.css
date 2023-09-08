@@ -38,6 +38,10 @@ body {
   overflow-y: auto;
 }
 
+.verse-text p {
+  text-align: left;
+}
+
 p, h2 {
   color: whitesmoke;
   font-family: 'Montserrat', sans-serif;
