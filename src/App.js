@@ -1,81 +1,134 @@
 import './App.css';
 import { useState } from 'react';
-
-// TODO: add basic search functionality
-// TODO: add randomizer (how to get a list of available books and verses?)
+import Select from 'react-select';
+import Books from './books.js';
 
 function App() {
 
     const [ verse, setVerse ] = useState('')
-    const [ title, setTitle ] = useState('Bible Verses')
+    const [ title, setTitle ] = useState('')
+    const header = 'The King James Bible'
 
     return <>
         <div className="container">
-            <VerseTitle title={ title } /> {/* Components get rerendered when their props change */}
+            <Header header={ header } /> {/* Components get rerendered when their props change */}
+            <VerseTitle title={ title } />
             <VerseText text={ verse } />
             <VerseLookupForm callback={(data) => {
-                setTitle(data.title)
-                setVerse(data.text)
+                setTitle(data.reference)
+
+                let output = ''
+                data.verses.forEach((v) => {
+                    output += v.verse + ': '
+                    output += v.text
+                })
+
+                setVerse(output)
             }} />        
         </div>
     </>
 }
 
+function Header({ header }) {
+
+    return <h1>{ header }</h1>
+}
+
 function VerseTitle({ title }) {
-    return <h1>{ title }</h1>
+
+    return <h2>{ title }</h2>
 }
 
 function VerseText({ text }) {
-    return <p>{ text }</p>
+
+    return (
+        <div className="verse-text">
+            <p>{ text }</p>
+        </div>
+    )
 }
 
 function VerseLookupForm({ callback }) {
 
-    const [ book, setBook ] = useState('Matthew')
-    const books = [
-        {
-            name: "Matthew",
-            chapters: [
-                {
-                    chapter: 9,
-                    maxVerse: 15,
-                }
-            ]
-        },
-        {
-            name: "John",
-            chapters: [
-                {
-                    chapter: 9,
-                    maxVerse: 75,
-                }
-            ]
+    // Name is the human-readable name, key is what gets passed to the API
+
+    const [ book, setBook ] = useState(Books[0]) // Matthew by default cause the Gospels are cool
+    const [ chapter, setChapter ] = useState(book.chapters[0])
+    const [ verseStart, setVerseStart ] = useState({label: "Verse 1", value: 1})
+    const [ verseEnd, setVerseEnd ] = useState({label: "Verse 1", value: 1})
+
+    const verseStartOptions = (chapter) => {
+        let opts = []
+
+        for (let i = 1; i <= chapter.maxVerse; i++) {
+            opts.push({label: "Verse " + i, value: i})
         }
-    ]
 
-    const bookChoices = books.map(( choice ) => <option value={choice.name} key={choice.name}>{ choice.name }</option>)
+        return opts
+    }
 
+    const verseEndOptions = (chapter, verse) => {
+        let opts = []
+
+        for (let i = verse.value; i <= chapter.maxVerse; i++) {
+            opts.push({label: "Verse " + i, value: i})
+        }
+
+        return opts
+    }
+    
     // Make the callback async to resolve the promise
     const onFormSubmit = async () => {
-        const results = await fetchVerseData( book, 9, 9 )
+        const results = await fetchVerseData( book, chapter, verseStart, verseEnd )
         callback(results)
     }
 
     return (
         <form name="select-verse">
-            <label htmlFor="book">Select Book: </label>
-                <select id="book" name="book" key={ book } defaultValue={ book }onChange={(e) => setBook(e.target.value)}>
-                    { bookChoices }
-                </select>
+            <Select
+                className="verse-select"
+                value={ book }
+                options={ Books }
+                onChange={ option => setBook(option) }
+                placeholder="Select Book"
+            /> 
+            <Select
+                className="verse-select"
+                value={ chapter }
+                options={ book.chapters }
+                onChange={ option => setChapter(option)}
+                placeholder="Select Chapter"
+            />
+            <Select
+                className="verse-select"
+                value={ verseStart }
+                options={ verseStartOptions(chapter)}
+                onChange={ option => {
+                    setVerseStart(option)
+
+                    if (option.value > verseEnd.value) {
+                        setVerseEnd(option)
+                    }
+                }}
+                placeholder="Select Starting Verse"
+            />
+            <Select
+                className="verse-select"
+                value={ verseEnd } 
+                options={ verseEndOptions(chapter, verseStart)}
+                onChange={ option => setVerseEnd(option)}
+                placeholder="Select Ending Verse"
+            />
             <button className="lookup-verse" type="button" onClick={ onFormSubmit }
             >Look Up Verse</button>
         </form>
     )
 }
 
-async function fetchVerseData( book, verse, chapter ) {
+async function fetchVerseData( book, chapter, verseStart, verseEnd ) {
 
-    const url = 'https://bible-api.com/' + book + '+' + chapter + ':' + verse + "?translation=kjv"
+    const translation = 'kjv' // King James Version
+    const url = 'https://bible-api.com/' + book.value + '+' + chapter.value + ':' + verseStart.value + '-' + verseEnd.value + "?translation=" + translation
     let results = await fetch(url, {
         method: 'GET',
         accepts: 'application/json',
@@ -87,18 +140,7 @@ async function fetchVerseData( book, verse, chapter ) {
             throw res.statusText
         }
     })
-    .then((data) => {
-        let output = '';
-        let verses = data.verses;
-
-        verses.forEach((verse) => output += verse.text + ' ') // pad with a space
-
-        return {
-            title: data.reference,
-            text: output,
-        }
-    })
-    .catch(e => console.log(e));
+    .catch(e => { return {title: 'Something went wrong...', text: e}});
 
     return results
 }
