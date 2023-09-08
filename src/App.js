@@ -31,7 +31,7 @@ function VerseText({ text }) {
 
 function VerseLookupForm({ callback }) {
 
-    const [ book, setBook ] = useState('')
+    const [ book, setBook ] = useState('Matthew')
     const books = [
         {
             name: "Matthew",
@@ -54,6 +54,8 @@ function VerseLookupForm({ callback }) {
     ]
 
     const bookChoices = books.map(( choice ) => <option value={choice.name} key={choice.name}>{ choice.name }</option>)
+
+    // Make the callback async to resolve the promise
     const onFormSubmit = async () => {
         const results = await fetchVerseData( book, 9, 9 )
         callback(results)
@@ -62,7 +64,7 @@ function VerseLookupForm({ callback }) {
     return (
         <form name="select-verse">
             <label htmlFor="book">Select Book: </label>
-                <select id="book" name="book" onChange={(e) => setBook(e.target.value)} >
+                <select id="book" name="book" key={ book } defaultValue={ book }onChange={(e) => setBook(e.target.value)}>
                     { bookChoices }
                 </select>
             <button className="lookup-verse" type="button" onClick={ onFormSubmit }
