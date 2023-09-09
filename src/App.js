@@ -30,7 +30,12 @@ function App() {
 
 function Header({ header }) {
 
-    return <div className="header"><h1>{ header }</h1></div>
+    return (
+        <div className="header">
+            <h1>{ header }</h1>
+            <h3>Powered By www.bible-api.com</h3>
+        </div>
+    )
 }
 
 function VerseTitle({ title }) {
