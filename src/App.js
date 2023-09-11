@@ -33,7 +33,7 @@ function Header({ header }) {
     return (
         <div className="header">
             <h1>{ header }</h1>
-            <h3>Powered By www.bible-api.com</h3>
+            <h3>Powered By bible-api.com</h3>
         </div>
     )
 }
